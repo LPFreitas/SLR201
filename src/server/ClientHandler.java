@@ -4,13 +4,11 @@ import java.net.Socket;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.InterruptedException;
 
 import utils.Logger;
 
 public class ClientHandler extends Thread {
 	
-	private Socket socket = null;
 	private int n = 0;
 	private Table table = null;
 	private DataOutputStream outStream = null;
@@ -18,13 +16,10 @@ public class ClientHandler extends Thread {
 	private Logger logger = null;
 	
 	public ClientHandler(Socket socket, Table table, int n, Logger logger) throws IOException {
-		this.socket = socket;
-		this.table = table;
-		this.n = n;
-		
 		this.outStream = new DataOutputStream(socket.getOutputStream());
 		this.inputStream = new DataInputStream(socket.getInputStream());
-		
+		this.table = table;
+		this.n = n;		
 		this.logger = logger;
 		this.send(Integer.toString(this.n));
 	}
@@ -52,13 +47,12 @@ public class ClientHandler extends Thread {
 		int leftFork = 0;
 		int rightFork = 0;
 
-		
-		if (this.n == this.table.getSize()) {
-			leftFork = n;
-			rightFork = (n + 1) % tableSize;
-		} else {
+		if (this.n == this.table.getSize() - 1) {
 			rightFork = n;
 			leftFork = (n + 1) % tableSize;
+		} else {
+			leftFork = n;
+			rightFork = (n + 1) % tableSize;
 		}
 		
 		while(true) {
@@ -66,6 +60,7 @@ public class ClientHandler extends Thread {
 				this.send("start");
 				break;
 			} catch(IOException e) {
+				e.printStackTrace();
 				continue;
 			}
 		}

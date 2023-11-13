@@ -1,11 +1,8 @@
 package client;
 
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.InetSocketAddress;
 import java.io.File;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Vector;
 
 import utils.Logger;
@@ -20,7 +17,6 @@ public class Client {
     	Logger logger = null;
     	
     	String host = args[0];
-//    	SocketAddress socketAddress = new InetSocketAddress(host, Client.port);
     	nPhilosophers = Integer.parseInt(args[1]);
     	
     	if (args.length == 2) {
@@ -32,13 +28,7 @@ public class Client {
     	Vector<Philosopher> philosophers = new Vector<Philosopher>();
     	
 		Socket socket = null;
-//		InetAddress address = null;
-//		try {
-//			address = InetAddress.getByName("localhost");	
-//		} catch(UnknownHostException e) {
-//			e.printStackTrace();
-//			return;
-//		}
+		
 		try {
 			for(int i = 0; i < nPhilosophers; i++) {
 				socket = new Socket(host, Client.port);
@@ -51,7 +41,9 @@ public class Client {
 		for(int i = 0; i < nPhilosophers; i++) {
 			try {
 				philosophers.get(i).join();
-			} catch(Exception e) {}
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		for(int i = 0; i < nPhilosophers; i++) {

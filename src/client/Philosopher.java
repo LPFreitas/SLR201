@@ -63,25 +63,19 @@ public class Philosopher extends Thread {
 			message = this.receive();
 		} catch (IOException e) {
 			e.printStackTrace();
+			return;
 		}
 		
-		while(true) {
-			
-//			if (this.nEatTimes >= 5) {
-//				try {
-//					this.send("exit");
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//				break;
-//			}
-			
+		while(true) {		
 			thinkTime = new Random().nextInt(256);
 			this.log("thinks for " + thinkTime + " ms");
 			try {
 				Thread.sleep(thinkTime);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				try {
+					socket.close();
+				} catch (IOException e1) {}
 			}
 			this.log("is hungry");
 			try {
@@ -95,7 +89,6 @@ public class Philosopher extends Thread {
 				this.log("received a unknown message from server: " + message);
 				break;
 			}
-			
 			eatTime = new Random().nextInt(256);
 			this.log("eats for " + Integer.toString(eatTime) + " ms");
 			try {
