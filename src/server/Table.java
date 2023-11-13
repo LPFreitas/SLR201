@@ -18,7 +18,7 @@ public class Table {
 		this.size = size;
 	}
 	
-	public synchronized void getForks(int leftFork, int rightFork) {	
+	public void getForks(int leftFork, int rightFork) {	
 		ReentrantLock lf = forks.get(leftFork);
 		ReentrantLock rf = forks.get(rightFork);
 		
@@ -39,7 +39,9 @@ public class Table {
 			}
 			
 			try { 
-				wait(); 
+				synchronized (this) {
+                    wait();
+                } 
 			} catch(Exception e) {
 				e.printStackTrace();
 				return;
@@ -47,11 +49,13 @@ public class Table {
 		}
 	}
 	
-	public synchronized void releaseForks(int leftFork, int rightFork) {		
+	public void releaseForks(int leftFork, int rightFork) {		
 		ReentrantLock lf = forks.get(leftFork);
 		ReentrantLock rf = forks.get(rightFork);
 		lf.unlock();
 		rf.unlock();
-		notifyAll();
+		synchronized (this) {
+			notifyAll();
+        }
 	}
 }
