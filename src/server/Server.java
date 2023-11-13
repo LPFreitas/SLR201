@@ -42,29 +42,32 @@ public class Server {
 		Vector<ClientHandler> handlers = new Vector<ClientHandler>();
 		serverSocket = new ServerSocket(Server.port);
 		
-		for (int i = 0; i < nPhilosophers; i++) {
-			try {
+		try {
+			for (int i = 0; i < nPhilosophers; i++) {
 				ClientHandler handler = acceptNewPhilosopher(serverSocket, i, logger);
 				handlers.add(handler);
 				logger.log("Philopher " + i + " has joined the table\n");
-			} catch (IOException e) {
-				e.printStackTrace();
+			}			
+			logger.log("All philosophers at the table\n");
+			
+			for(int i = 0; i < nPhilosophers; i++) {
+				handlers.get(i).start();
 			}
+	    	
+			for(int i = 0; i < nPhilosophers; i++) {
+				try {
+					handlers.get(i).join();
+				} catch(Exception e) {}
+			}
+			logger.log("All client handlers have finished\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			serverSocket.close();
+			for(int i = 0; i < nPhilosophers; i++) {
+				handlers.get(i).closeSocket();
+			}
+			logger.log("Shutting down the server\n");
 		}
-		serverSocket.close();
-		
-		logger.log("All philosophers at the table\n");
-		
-		for(int i = 0; i < nPhilosophers; i++) {
-			handlers.get(i).start();
-		}
-    	
-		for(int i = 0; i < nPhilosophers; i++) {
-			try {
-				handlers.get(i).join();
-			} catch(Exception e) {}
-		}
-		logger.log("All client handlers have finished\n");
-        logger.log("Shutting down the server\n");
     }
 }

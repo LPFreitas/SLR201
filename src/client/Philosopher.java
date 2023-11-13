@@ -46,6 +46,14 @@ public class Philosopher extends Thread {
 		this.logger.log("Philosopher " + n + " " + message + "\n");
 	}
 	
+	public void closeSocket() {
+		try {
+			this.socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public int getNumber() {
 		return this.n;
 	}
@@ -73,17 +81,15 @@ public class Philosopher extends Thread {
 				Thread.sleep(thinkTime);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-				try {
-					socket.close();
-				} catch (IOException e1) {}
+				break;
 			}
 			this.log("is hungry");
 			try {
 				this.send("eat request");
 				message = this.receive();
 			} catch (IOException e) {
-				e.printStackTrace();
-				return;
+				this.log("stopped receiving response messages from server");
+				break;
 			}
 			if(!message.equals("eat permission")) {
 				this.log("received a unknown message from server: " + message);
@@ -95,14 +101,15 @@ public class Philosopher extends Thread {
 				Thread.sleep(eatTime);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				break;
 			}
 			this.log("finishes eating");
 			try {
 				this.send("finished eating");
 				message = this.receive();
 			} catch (IOException e) {
-				e.printStackTrace();
-				return;
+				this.log("stopped receiving response messages from server");
+				break;
 			}
 			this.nEatTimes++;
 			if(!message.equals("think permission")) {

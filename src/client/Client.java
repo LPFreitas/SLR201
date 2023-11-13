@@ -36,13 +36,14 @@ public class Client {
 				philosopher.start();
 				philosophers.add(philosopher);
 			}
-		} catch(Exception e) {}
-    	
-		for(int i = 0; i < nPhilosophers; i++) {
-			try {
+			for(int i = 0; i < nPhilosophers; i++) {
 				philosophers.get(i).join();
-			} catch(Exception e) {
-				e.printStackTrace();
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+			for(int i = 0; i < nPhilosophers; i++) {
+				philosophers.get(i).closeSocket();
 			}
 		}
 		

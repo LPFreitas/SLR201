@@ -9,6 +9,7 @@ import utils.Logger;
 
 public class ClientHandler extends Thread {
 	
+	private Socket socket = null;
 	private int n = 0;
 	private Table table = null;
 	private DataOutputStream outStream = null;
@@ -16,6 +17,7 @@ public class ClientHandler extends Thread {
 	private Logger logger = null;
 	
 	public ClientHandler(Socket socket, Table table, int n, Logger logger) throws IOException {
+		this.socket = socket;
 		this.outStream = new DataOutputStream(socket.getOutputStream());
 		this.inputStream = new DataInputStream(socket.getInputStream());
 		this.table = table;
@@ -35,6 +37,14 @@ public class ClientHandler extends Thread {
 	
 	private void log(String message) {
 		this.logger.log("Philosopher " + n + " " + message + "\n");
+	}
+	
+	public void closeSocket() {
+		try {
+			this.socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public int getNumber() {
@@ -80,7 +90,6 @@ public class ClientHandler extends Thread {
 					this.table.getForks(leftFork, rightFork);
 					this.log("begins to eat");
 					this.send("eat permission");
-					
 				} else if (command.equals("finished eating")) {
 					this.table.releaseForks(leftFork, rightFork);
 					this.log("releases forks " + leftFork + " and " + rightFork);
